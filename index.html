@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التدريب العملي علي TOFAS | م. محمد شاهين</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0056b3;
+            --accent-gold: #FFD700;
+            --error-red: #dc3545;
+            --success-green: #28a745;
+            --code-bg: #1e1e1e;
+        }
+
+        /* حماية المحتوى والخصوصية */
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0; padding: 0;
+            user-select: none; /* منع تحديد النصوص */
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: #050a10;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* العلامة المائية لحفظ الحقوق */
+        body::before {
+            content: "إعداد المهندس محمد شاهين - 01029966799";
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+            z-index: 1000;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+
+        /* واجهة الاختبار الاحترافية */
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.98);
+            width: 96%;
+            max-width: 1100px;
+            border-radius: 25px;
+            padding: 45px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            z-index: 1;
+            position: relative;
+            border-top: 10px solid var(--accent-gold);
+            display: flex;
+            flex-direction: column;
+            min-height: 700px;
+            text-align: center;
+        }
+
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.7s ease-out; }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* العناصر البصرية */
+        .expert-img { width: 150px; height: 150px; border-radius: 50%; border: 6px solid var(--accent-gold); object-fit: cover; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .timer-badge { position: absolute; top: 25px; left: 25px; background: #222; color: var(--accent-gold); padding: 12px 25px; border-radius: 12px; font-weight: 900; font-size: 1.2rem; border: 1px solid var(--accent-gold); }
+        
+        /* الأسئلة والأكواد */
+        .code-box { background: var(--code-bg); color: #d4d4d4; padding: 25px; border-radius: 15px; text-align: left; direction: ltr; font-family: 'Courier New', monospace; margin: 20px 0; border-left: 8px solid var(--accent-gold); width: 100%; overflow-x: auto; font-size: 1.25rem; }
+        .question-text { font-size: 1.6rem; font-weight: 800; text-align: right; width: 100%; margin-bottom: 15px; color: var(--primary-blue); }
+
+        /* التلميحات الذكية */
+        .hint-toggle { color: var(--secondary-blue); cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: block; text-align: right; text-decoration: underline; }
+        .hint-box { display: none; background: #fff9db; padding: 12px; border-radius: 10px; font-size: 0.95rem; margin-bottom: 20px; border: 1px solid #ffeeba; text-align: right; color: #856404; }
+
+        /* خيارات الإجابة */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+        .option-btn { background: white; border: 2px solid #e0e0e0; padding: 20px; border-radius: 15px; cursor: pointer; text-align: right; font-weight: 700; font-size: 1.1rem; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .option-btn:hover { border-color: var(--secondary-blue); background: #f0f7ff; }
+
+        /* تحليل الإجابات */
+        .analysis-container { margin-top: 25px; width: 100%; max-height: 450px; overflow-y: auto; text-align: right; border: 1px solid #ddd; border-radius: 15px; padding: 25px; background: #fdfdfd; }
+        .analysis-item { border-bottom: 1px solid #eee; padding: 18px 0; }
+        .analysis-q { font-weight: 900; color: var(--primary-blue); margin-bottom: 8px; }
+
+        .btn-primary { background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)); color: white; border: none; padding: 20px 70px; font-size: 1.3rem; border-radius: 45px; cursor: pointer; font-weight: bold; margin-top: 25px; transition: 0.3s; box-shadow: 0 8px 15px rgba(0,51,102,0.3); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,51,102,0.4); }
+
+        input.access-input { padding: 18px; width: 65%; border: 2px solid var(--secondary-blue); border-radius: 15px; text-align: center; font-size: 1.4rem; margin: 25px 0; outline: none; }
+
+        @media (max-width: 800px) { .options-grid { grid-template-columns: 1fr; } .expert-img { width: 110px; height: 110px; } .timer-badge { position: relative; top: 0; left: 0; margin-bottom: 15px; width: fit-content; } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="quiz-container screen active" id="access-screen">
+        <img src="https://raw.githubusercontent.com/mhshahen6/TOFAS-TEST/main/IMG_%D9%A2%D9%A0%D9%A2%D9%A6%D9%A0%D9%A1%D9%A1%D9%A2_%D9%A2%D9%A2%D9%A1%D9%A7%D9%A4%D9%A6.jpg" class="expert-img" alt="م. محمد شاهين">
+        <h1>منصة المهندس محمد شاهين</h1>
+        <p style="font-size: 1.2rem; color: #555;">يرجى إدخال كود التفعيل المخصص لطلابنا لبدء المحاكاة</p>
+        <input type="text" id="activation-code" class="access-input" placeholder="ادخل الكود هنا">
+        <button class="btn-primary" onclick="verifyCode()">تفعيل الدخول</button>
+        <div style="margin-top: auto; color: #888;">للحصول على كود الدخول: 01029966799</div>
+    </div>
+
+    <div class="quiz-container screen" id="quiz-screen">
+        <div class="timer-badge" id="timer-display">60:00</div>
+        <div id="question-count" style="font-weight: 900; color: var(--secondary-blue); font-size: 1.3rem; margin-bottom: 10px;">سؤال 1 من 60</div>
+        <div id="question-content" style="width: 100%;"></div>
+        <div id="hint-section" style="width: 100%;"></div>
+        <div class="options-grid" id="options-container"></div>
+        <button class="btn-primary" id="next-btn" onclick="nextQuestion()" style="display: none;">السؤال التالي</button>
+    </div>
+
+    <div class="quiz-container screen" id="result-screen">
+        <img src="https://raw.githubusercontent.com/mhshahen6/TOFAS-TEST/main/IMG_%D9%A2%D9%A0%D9%A2%D9%A6%D9%A0%D9%A1%D9%A1%D9%A2_%D9%A2%D9%A2%D9%A1%D9%A7%D9%A4%D9%A6.jpg" class="expert-img" style="width: 100px; height: 100px;">
+        <h1>تقرير الأداء النهائي</h1>
+        <div id="final-score" style="font-size: 5rem; font-weight: 900; color: var(--primary-blue); margin: 15px 0;">0%</div>
+        <h3 style="text-align: right; width: 100%; border-bottom: 3px solid var(--accent-gold); padding-bottom: 8px; margin-bottom: 15px;">📊 تحليل الإجابات:</h3>
+        <div class="analysis-container" id="analysis-list"></div>
+        <button class="btn-primary" onclick="location.reload()">إعادة المحاولة</button>
+    </div>
+
+    <script>
+        const SECRET_CODE = "SHAHEEN2026"; 
+        let currentQuestion = 0; let score = 0; let timeLeft = 3600; 
+        let userAnswers = []; let timerInterval;
+
+        const questions = [
+            { q: "ما هو ناتج الكود التالي؟", code: 'let animal = "Dog";\nconsole.log(animal);', options: ["animal", '"Dog"', "Dog", "Error"], answer: 2, hint: "تذكر أن طباعة المتغير بدون علامات تنصيص تعطي قيمته المخزنة." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'let vehicle = "Train";\nvehicle = "Bus";\nconsole.log(vehicle);', options: ["Train", "Bus", "Error", "None"], answer: 1, hint: "المتغيرات من نوع let يمكن تغيير قيمتها لاحقاً." },
+            { q: "أي كود يطبع Hello World كنص؟", code: null, options: ['console.log(Hello World);', 'console.log("Hello World");', 'print("Hello World");', 'console.log(Hello + World);'], answer: 1, hint: "النصوص تحتاج علامات تنصيص." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'let name = "Ahmed";\nname = "Ali";\nconsole.log(name);', options: ["Ahmed", "Ali", "Ahmed Ali", "لا شيء"], answer: 1, hint: "المتغير يحتفظ بآخر قيمة." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'let place = "Land";\nconsole.log(place);\nplace = "Sky";\nconsole.log(place);', options: ["Sky Sky", "Land Sky", "Land Land", "Sky فقط"], answer: 1, hint: "Land أولاً ثم Sky." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'let greeting = "Welcome";\nconsole.log(greeting);\ngreeting = "Good Morning";\nconsole.log(greeting);', options: ["Welcome ثم Good Morning", "Good Morning ثم Welcome", "Welcome فقط", "Error"], answer: 0, hint: "ترتيب التنفيذ." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'let num = 5;\nlet ans = 0;\nnum = ans;\nconsole.log(num);', options: ["5", "0", "50", "لا شيء"], answer: 1, hint: "قيمة ans (0) انتقلت إلى num." },
+            { q: "ما ناتج الكود التالي؟", code: 'let s = 100000;\ns = 200000;\nconsole.log("Increased");\nconsole.log(s);', options: ["100000", "Increased ثم 100000", "Increased ثم 200000", "200000 فقط"], answer: 2, hint: "النص ثم القيمة الجديدة." },
+            { q: "ما نوع البيانات: typeof 'Hello'؟", code: null, options: ["string", "number", "boolean", "undefined"], answer: 0, hint: "نص داخل علامات اقتباس." },
+            { q: "ما نوع البيانات: typeof 20؟", code: null, options: ["string", "number", "object", "function"], answer: 1, hint: "رقم بدون علامات اقتباس." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'console.log("Total = " + (5 + 5));', options: ["Total = 55", "Total = 10", "Total = 100", "Error"], answer: 1, hint: "الأقواس تُنفذ أولاً." },
+            { q: "ما هو ناتج الكود التالي؟", code: 'console.log("Total = " + 5 + 5);', options: ["Total = 10", "Total = 55", "10", "55"], answer: 1, hint: "بدون أقواس: دمج نصوص." },
+            { q: "ما ناتج Math.round(3.6)؟", code: null, options: ["3", "4", "3.5", "3.6"], answer: 1, hint: ".6 تقرب للأعلى." },
+            { q: "ما ناتج Math.floor(9.9)؟", code: null, options: ["10", "9", "9.5", "9.0"], answer: 1, hint: "Floor تحذف الكسر." },
+            { q: "ما ناتج Math.floor(-9.9)؟", code: null, options: ["-9", "-10", "-9.9", "-8"], answer: 1, hint: "-10 أصغر من -9." },
+            { q: "ما ناتج Math.max(3, 7, 1)؟", code: null, options: ["1", "3", "7", "11"], answer: 2, hint: "max تعني الأكبر." },
+            { q: "ما ناتج Math.min(10, 50, 2)؟", code: null, options: ["50", "2", "10", "62"], answer: 1, hint: "min تعني الأصغر." },
+            { q: "ما ناتج الكود؟", code: 'let n1=10; let n2=5;\nconsole.log(n1 * n2);', options: ["15", "50", "2", "105"], answer: 1, hint: "* تعني ضرب." },
+            { q: "ما ناتج الكود؟", code: 'let n=10;\nconsole.log(n * n);', options: ["100", "20", "10", "1010"], answer: 0, hint: "10 ضرب 10." },
+            { q: "ما ناتج الكود؟", code: 'console.log(2 + 2);\nconsole.log(2 * 2);', options: ["4 ثم 8", "4 ثم 4", "22 ثم 4", "4 ثم 22"], answer: 1, hint: "كلاهما يساوي 4." },
+            { q: "توليد رقم عشوائي بين 0 و 1:", code: null, options: ["Math.round()", "Math.random()", "Math.floor()", "Math.ceil()"], answer: 1, hint: "Random." },
+            { q: "ما ناتج Number('25')؟", code: null, options: ['"25"', "25 (رقم)", "NaN", "Error"], answer: 1, hint: "تحويل النص لرقم." },
+            { q: "ما ناتج Number('Hello')؟", code: null, options: ['"Hello"', "0", "NaN", "undefined"], answer: 2, hint: "ليس رقماً (NaN)." },
+            { q: "ما ناتج 10 == 10؟", code: null, options: ["true", "false", "10", "undefined"], answer: 0, hint: "تساوي القيم." },
+            { q: "ما ناتج 3 === '3'؟", code: null, options: ["true", "false", "3", "undefined"], answer: 1, hint: "الأنواع مختلفة (رقم ونص)." },
+            { q: "ما ناتج الكود؟", code: 'let t=50000;\nif(t < 30000){console.log("A");}\nelse{console.log("B");}', options: ["A", "B", "لا شيء", "Error"], answer: 1, hint: "الشرط خاطئ." },
+            { q: "ما ناتج الكود؟", code: 'let d="Wed";\nif(d=="Sat"){console.log("C");}\nelse{console.log("O");}', options: ["C", "O", "Wed", "Sat"], answer: 1, hint: "Wed لا تساوي Sat." },
+            { q: "ما ناتج الكود؟", code: 'let t=60;\nif(t==100){console.log("Boil");}\nelse{console.log("Not");}', options: ["Boil", "Not", "60", "100"], answer: 1, hint: "60 لا تساوي 100." },
+            { q: "ما ناتج الكود؟", code: 'let w="Sun";\nif(w=="Rain"){console.log("Umbrella");}\nelse{console.log("No");}', options: ["Umbrella", "No", "Sun", "Rain"], answer: 1, hint: "الشرط خاطئ." },
+            { q: "ما ناتج الكود؟", code: 'let m=25; let me=15;\nif(m > me){console.log("Older");}', options: ["Older", "Me", "لا شيء", "Error"], answer: 0, hint: "25 أكبر من 15." },
+            { q: "ما ناتج الكود؟", code: 'let b=0;\nif(b==0){console.log("Charge");}', options: ["Charge", "Full", "لا شيء", "0"], answer: 0, hint: "الشرط صحيح." },
+            { q: "ما ناتج الكود؟", code: 'let f=100;\nif(f==100){console.log("Full");}', options: ["Full", "Empty", "لا شيء", "100"], answer: 0, hint: "الشرط صحيح." },
+            { q: "ما ناتج الكود؟", code: 'let n=35;\nif(n>20){console.log("G1");}', options: ["G1", "G2", "35", "لا شيء"], answer: 0, hint: "35 أكبر من 20." },
+            { q: "ما ناتج الكود؟", code: 'let p=4; let c=6;\np=p+2;\nif(p>=c){console.log("Full");}', options: ["Full", "Empty", "لا شيء", "Error"], answer: 0, hint: "p أصبح 6." },
+            { q: "ما ناتج الكود؟", code: 'let s=70; let a=65;\nif(s<a){console.log("Good");}\nelse{console.log("Exc");}', options: ["Good", "Exc", "70", "65"], answer: 1, hint: "70 ليست أقل من 65." },
+            { q: "ما ناتج الكود؟", code: 'let m=10; let f=12;\nif(m>f){console.log("Me");}\nelse{console.log("Fr");}', options: ["Me", "Fr", "Same", "Error"], answer: 1, hint: "10 ليست أكبر من 12." },
+            { q: "ما ناتج الكود؟", code: 'let z=8;\nif(z==8){console.log("School");}', options: ["School", "Home", "8", "لا شيء"], answer: 0, hint: "الشرط صحيح." },
+            { q: "ما ناتج الكود؟", code: 'let w=10000; let p=1500;\nif(w>p){console.log("Buy");}', options: ["Buy", "No", "8500", "لا شيء"], answer: 0, hint: "معك مال يكفي." },
+            { q: "ما ناتج الكود؟", code: 'let c="Y";\nif(c=="R"){console.log("S");}\nelse if(c=="Y"){console.log("W");}', options: ["S", "W", "G", "لا شيء"], answer: 1, hint: "الشرط الثاني صحيح." },
+            { q: "ما ناتج الكود؟", code: 'let f=400; let v=300;\nif(f>v){console.log("F");}', options: ["F", "V", "400", "لا شيء"], answer: 0, hint: "400 أكبر." },
+            { q: "ما ناتج الكود؟", code: 'let n=110;\nif(n==110) console.log("H");\nn=119;\nif(n==119) console.log("X");', options: ["H فقط", "X فقط", "H ثم X", "لا شيء"], answer: 2, hint: "كلا الشرطين تحقق في وقته." },
+            { q: "ما ناتج الكود؟", code: 'let w=300;\nif(w>400){console.log("L");}\nelse if(w>200){console.log("M");}', options: ["L", "M", "S", "لا شيء"], answer: 1, hint: "300 أكبر من 200." },
+            { q: "ما ناتج الكود؟", code: 'let o="Or";\nif(o=="Ap"){console.log("Ap");}\nelse if(o=="Or"){console.log("Or");}', options: ["Ap", "Or", "No", "Error"], answer: 1, hint: "الشرط الثاني صحيح." },
+            { q: "ما ناتج الكود؟", code: 'let p=25;\nif(p<10){console.log("S");}\nelse if(p<30){console.log("L");}', options: ["S", "L", "No", "25"], answer: 1, hint: "25 أقل من 30." },
+            { q: "ما ناتج الكود؟", code: 'let n1=10; let n2=30;\nif(n2>n1){console.log(n1*n2);}', options: ["10", "30", "300", "40"], answer: 2, hint: "30 أكبر، اضربهم." },
+            { q: "ما ناتج الكود؟", code: 'let n1=1; let n2=5; let a=0;\nif(n1>n2) a=n1;\nelse a=n2;\nconsole.log(a);', options: ["1", "5", "0", "6"], answer: 1, hint: "else ستنفذ." },
+            { q: "ما ناتج الكود؟", code: 'if(2<5){console.log(4/2);}', options: ["4", "2", "5", "لا شيء"], answer: 1, hint: "4 تقسيم 2." },
+            { q: "ما ناتج الكود؟", code: 'let p=1200;\nconsole.log("D");\nif(p>1000){console.log("A");}', options: ["D فقط", "D ثم A", "A فقط", "لا شيء"], answer: 1, hint: "D دائما تطبع، وA تطبع لأن الشرط صحيح." },
+            { q: "ما ناتج الكود؟", code: 'let n=1; let t="E";\nif(n==1) console.log(t);\nconsole.log("A");', options: ["E فقط", "A فقط", "E ثم A", "لا شيء"], answer: 2, hint: "A خارج الشرط." },
+            { q: "ما ناتج الكود؟", code: 'let p=12; let a=4; let c=15;\nif((p+a)>c){console.log("Over");}', options: ["Over", "Under", "16", "لا شيء"], answer: 0, hint: "16 أكبر من 15." },
+            { q: "ما ناتج الكود؟", code: 'for(let i=0; i<3; i++){\n console.log("Hi");\n}', options: ["مرة", "مرتين", "3 مرات", "4 مرات"], answer: 2, hint: "0, 1, 2." },
+            { q: "ما ناتج الكود؟", code: 'for(let i=1; i<=2; i++){\n console.log(i);\n}', options: ["1", "1 ثم 2", "1-3", "0-1"], answer: 1, hint: "يصل لـ 2." },
+            { q: "الكود لزيادة i بمقدار 1:", code: null, options: ["i++", "i + 1", "i == 1", "i--"], answer: 0, hint: "++" },
+            { q: "تعريف دالة calc:", code: null, options: ["function calc(){}", "let calc = function", "func calc(){}", "def calc(){}"], answer: 0, hint: "function keyword." },
+            { q: "ما ناتج الكود؟", code: 'function d(x){return x*2;}\nconsole.log(d(4));', options: ["4", "8", "2", "16"], answer: 1, hint: "4 ضرب 2." },
+            { q: "ما ناتج الكود؟", code: 'function s(a,b){return a+b;}\nconsole.log(s(3,5));', options: ["3", "5", "8", "15"], answer: 2, hint: "جمع." },
+            { q: "ما ناتج الكود؟", code: 'let s=4; let t=8;\nif(s<t){console.log(t-s);}', options: ["8", "4", "12", "-4"], answer: 1, hint: "8 ناقص 4." },
+            { q: "ما ناتج الكود؟", code: 'let l="C";\nif(l=="C"){l="O";}\nconsole.log(l);', options: ["C", "O", "L", "Error"], answer: 1, hint: "تغيرت القيمة." },
+            { q: "ما ناتج الكود؟", code: 'let t=15;\nif(t<10){console.log("M");}\nelse{console.log("W");}', options: ["M", "W", "15", "10"], answer: 1, hint: "15 ليست أقل من 10." },
+            { q: "ما ناتج الكود؟", code: 'let n=30; let n2=10;\nif(n>20){\n if(n2==10){console.log("S");}\n}', options: ["S", "F", "30", "لا شيء"], answer: 0, hint: "كلا الشرطين صحيح." }
+        ];
+
+        function verifyCode() {
+            const input = document.getElementById('activation-code').value.trim().toUpperCase();
+            if(input === SECRET_CODE) {
+                document.getElementById('access-screen').classList.remove('active');
+                document.getElementById('quiz-screen').classList.add('active');
+                startTimer(); loadQuestion();
+            } else { alert("عذراً، كود التفعيل غير صحيح!"); }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft/60); let s = timeLeft%60;
+                document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(timeLeft <= 0) { clearInterval(timerInterval); showResult(); }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-count').innerText = `سؤال ${currentQuestion + 1} من ${questions.length}`;
+            let html = `<div class="question-text">${q.q}</div>`;
+            if(q.code) html += `<div class="code-box">${q.code}</div>`;
+            document.getElementById('question-content').innerHTML = html;
+
+            document.getElementById('hint-section').innerHTML = `
+                <span class="hint-toggle" onclick="toggleHint()">💡 هل تحتاج لتلميح؟</span>
+                <div id="hint-box" class="hint-box">${q.hint}</div>
+            `;
+
+            const optDiv = document.getElementById('options-container');
+            optDiv.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn'; btn.innerText = opt;
+                btn.onclick = () => selectAnswer(i, btn);
+                optDiv.appendChild(btn);
+            });
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        function toggleHint() {
+            const hb = document.getElementById('hint-box');
+            hb.style.display = (hb.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function selectAnswer(i, btn) {
+            const q = questions[currentQuestion];
+            userAnswers[currentQuestion] = { user: i, correct: q.answer };
+            const opts = document.querySelectorAll('.option-btn');
+            opts.forEach(o => o.style.pointerEvents = 'none');
+
+            if(i === q.answer) { btn.style.background = 'var(--success-green)'; score++; }
+            else { btn.style.background = 'var(--error-red)'; opts[q.answer].style.background = 'var(--success-green)'; }
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if(currentQuestion < questions.length) loadQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            document.getElementById('final-score').innerText = Math.round((score/questions.length)*100) + '%';
+            
+            const list = document.getElementById('analysis-list');
+            list.innerHTML = '';
+            questions.forEach((q, i) => {
+                const ans = userAnswers[i];
+                list.innerHTML += `
+                    <div class="analysis-item">
+                        <div class="analysis-q">س ${i+1}: ${q.q}</div>
+                        <div style="color: ${ans && ans.user === q.answer ? 'green' : 'red'}">
+                            إجابتك: ${ans ? q.options[ans.user] : '---'} | الصحيحة: ${q.options[q.answer]}
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // تأثيرات الخلفية: فقاعات ذهبية وفراشات
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let bubbles = []; let butterflies = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            for(let i=0; i<25; i++) createBubble();
+            for(let i=0; i<12; i++) createButterfly();
+        }
+
+        function createBubble() {
+            bubbles.push({ x: Math.random()*canvas.width, y: canvas.height+Math.random()*100, r: Math.random()*12+4, s: Math.random()*1.2+0.4, a: Math.random()*0.3+0.1 });
+        }
+
+        function createButterfly() {
+            butterflies.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, sz: Math.random()*8+6, c: ['#00d4ff','#FFD700','#ff00ff'][Math.floor(Math.random()*3)], sx: (Math.random()-0.5)*1.5, sy: (Math.random()-0.5)*1.5, f: 0, fs: Math.random()*0.2+0.1 });
+        }
+
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            bubbles.forEach(b => {
+                b.y -= b.s; if(b.y < -20) b.y = canvas.height+20;
+                ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255, 215, 0, ${b.a})`; ctx.fill();
+            });
+            butterflies.forEach(bf => {
+                bf.x += bf.sx; bf.y += bf.sy; bf.f += bf.fs;
+                if(bf.x < 0 || bf.x > canvas.width) bf.sx *= -1;
+                if(bf.y < 0 || bf.y > canvas.height) bf.sy *= -1;
+                ctx.save(); ctx.translate(bf.x, bf.y);
+                ctx.fillStyle = bf.c;
+                let w = bf.sz * Math.abs(Math.sin(bf.f));
+                ctx.beginPath(); ctx.ellipse(-bf.sz/2, 0, w, bf.sz, 0.4, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(bf.sz/2, 0, w, bf.sz, -0.4, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+            });
+            requestAnimationFrame(animate);
+        }
+        initCanvas(); animate(); window.addEventListener('resize', initCanvas);
+    </script>
+</body>
+</html>
